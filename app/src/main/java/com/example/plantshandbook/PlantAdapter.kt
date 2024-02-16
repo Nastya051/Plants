@@ -6,13 +6,17 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.plantshandbook.databinding.PlantItemBinding
 
-class PlantAdapter: RecyclerView.Adapter<PlantAdapter.PlantHolder>() {
+class PlantAdapter(val listener: Listener): RecyclerView.Adapter<PlantAdapter.PlantHolder>() {
     val plantList = ArrayList<Plant>()
     class PlantHolder(item: View): RecyclerView.ViewHolder(item) {
         val binding = PlantItemBinding.bind(item)
-        fun bind(plant: Plant) =with(binding){ //позволяет не писать каждый раз binding перед использованием какого-либо view
+
+        fun bind(plant: Plant, listener: Listener) =with(binding){ //позволяет не писать каждый раз binding перед использованием какого-либо view
             imageView.setImageResource(plant.imageId)
             tvTitle.text = plant.title
+            itemView.setOnClickListener {
+                listener.onClick(plant)
+            }
         }
     }
 
@@ -26,11 +30,15 @@ class PlantAdapter: RecyclerView.Adapter<PlantAdapter.PlantHolder>() {
     }
 
     override fun onBindViewHolder(holder: PlantHolder, position: Int) {
-        holder.bind(plantList[position])
+        holder.bind(plantList[position], listener)
     }
 
     fun addPlant(plant: Plant){
         plantList.add(plant)
         notifyDataSetChanged()//данные изменились, перерисовка данных
+    }
+
+    interface Listener{
+        fun onClick(plant: Plant)
     }
 }
